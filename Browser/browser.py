@@ -5,7 +5,7 @@ import getpass
 url = 'http://w2.samsung.net/'
 
 
-def pede_senha():
+def user_password():
     layout = [[sg.Text("Inform your password:", size=(15, 1)), sg.InputText()],
               [sg.Submit(), sg.Cancel()]]
     window = sg.Window('Samsung SDS Login', layout)
@@ -18,7 +18,7 @@ def pede_senha():
 
 
 sg.theme('Reddit')
-password = pede_senha()
+password = user_password()
 
 # abre navegador para manipulação
 chrome = webdriver.Chrome(executable_path=r"C:\Program Files\chromedriver.exe")
