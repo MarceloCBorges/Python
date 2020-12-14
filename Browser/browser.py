@@ -1,19 +1,33 @@
 import PySimpleGUI as sg
-from selenium import webdriver
 import getpass
+
+from selenium import webdriver
 
 url = 'http://w2.samsung.net/'
 
 
 def user_password():
-    layout = [[sg.Text("Inform your password:", size=(15, 1)), sg.InputText()],
-              [sg.Submit(), sg.Cancel()]]
-    window = sg.Window('Samsung SDS Login', layout)
-    event, values = window.read()
-    window.close()
+    layout_password = [[sg.Text("Inform your password:", size=(15, 1)), sg.InputText(password_char='*')],
+                       [sg.Submit(), sg.Cancel()]]
+    window_password = sg.Window('Samsung SDS Login', layout_password)
+    event, values = window_password.read()
+
     if event == 'Submit':
-        return values[0]
-    if event == 'Cancel':
+        if values[0] == '':
+            window_password.close()
+            layout_error = [[sg.Text("Password cannot be blank.")], [sg.Ok()]]
+            window_error = sg.Window('Error', layout_error)
+            event = window_error.read()
+
+            if event is not None:
+                window_error.close()
+                user_password()
+            else:
+                quit()
+        else:
+            return values[0]
+
+    elif event == 'Cancel' or event is None:
         quit()
 
 
