@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 import getpass
 
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 
 url = 'http://w2.samsung.net/'
 
@@ -31,21 +32,41 @@ def user_password():
         quit()
 
 
+def login():
+    global password
+
+    user = getpass.getuser()  # identifica usuário logado
+    # identificação e escrita campo usuário
+    user_input = chrome.find_element_by_id('USERID')
+    user_input.send_keys(user)
+    # identificação e escrita campo senha
+
+    password_input = chrome.find_element_by_id('USERPASSWORD')
+    password_input.send_keys(password)
+    sigin_button = chrome.find_element_by_xpath("//button[@id='signIn']")
+    sigin_button.click()
+
+    # msg senha incorreta
+    try:
+        if chrome.find_element_by_id("loginAlert"):
+            alert_button = chrome.find_element_by_xpath("//button[@id='closeAlert']")
+            alert_button.click()
+            layout_alert = [[sg.Text("Incorrect Password.")], [sg.Ok()]]
+            window_alert = sg.Window('Warning', layout_alert)
+            event = window_alert.read()
+            if event is not None:
+                window_alert.close()
+                password = user_password()
+                login()
+    except NoSuchElementException:
+        pass
+
+
 sg.theme('Reddit')
 password = user_password()
 
 # abre navegador para manipulação
 chrome = webdriver.Chrome(executable_path=r"C:\Program Files\chromedriver.exe")
 chrome.get(url)
-
-user = getpass.getuser()  # identifica usuário logado
-# identificação e escrita campo usuário
-user_input = chrome.find_element_by_id('USERID')
-user_input.send_keys(user)
-# identificação e escrita campo senha
-
-
-password_input = chrome.find_element_by_id('USERPASSWORD')
-password_input.send_keys(password)
-sigIn_button = chrome.find_element_by_xpath("//button[@id='signIn']")
-sigIn_button.click()
+login()
+quit()
